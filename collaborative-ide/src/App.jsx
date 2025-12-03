@@ -1,39 +1,48 @@
-import { useState, useRef, useEffect } from "react";
 import * as Y from "yjs";
+import { useState, useRef, useEffect } from "react";
 import { WebsocketProvider } from "y-websocket";
-import "./App.css";
 
 const doc = new Y.Doc();
-const counter = doc.getMap("counter");
-
-if (counter.get("count") === undefined) {
-  counter.set("count", 0);
-}
+const ide = doc.getText("ide");
 
 const provider = new WebsocketProvider(
   "wss://demos.yjs.dev/ws",
-  "vishal-shared-room",
+  "vishal-room",
   doc
 );
 
 function App() {
-  const [count, setCount] = useState(counter.get("count"));
+  const [value, setValue] = useState("");
+  const textAreaRef = useRef(null);
 
   useEffect(() => {
     const observer = () => {
-      setCount(counter.get("count"));
+      setValue(ide.toString());
     };
-    counter.observe(observer);
-    return () => counter.unobserve(observer);
+
+    ide.observe(observer);
+
+    return () => {
+      ide.unobserve(observer);
+    };
   }, []);
 
-  const increment = () => {
-    counter.set("count", counter.get("count") + 1);
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+
+    ide.delete(0, ide.length);
+    ide.insert(0, newValue);
   };
+
   return (
     <>
-      <div className="card">
-        <button onClick={increment}>count is {count}</button>
+      <div>
+        <h2>Collaborative IDE</h2>
+        <textarea
+          ref={textAreaRef}
+          value={value}
+          onChange={handleChange}
+        ></textarea>
       </div>
     </>
   );
