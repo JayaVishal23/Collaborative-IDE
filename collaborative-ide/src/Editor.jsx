@@ -48,7 +48,7 @@ const editorStyle = {
   width: "100vw",
 };
 
-function Editor() {
+const Editor = ({ roomName }) => {
   const editorRef = useRef(null);
 
   //   const isInitialized = useRef(false);
@@ -71,8 +71,8 @@ function Editor() {
     const ytext = doc.getText("monaco");
 
     const provider = new WebsocketProvider(
-      "wss://demos.yjs.dev/ws",
-      "room-vishal",
+      "ws://localhost:1234",
+      roomName,
       doc
     );
 
@@ -116,6 +116,6 @@ function Editor() {
   }, []);
 
   return <div ref={editorRef} style={editorStyle}></div>;
-}
+};
 
 export default Editor;
