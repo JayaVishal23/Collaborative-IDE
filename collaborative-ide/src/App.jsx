@@ -17,7 +17,6 @@ const App = () => {
   return (
     <>
       <div>
-        <h2>Collaborative IDE</h2>
         {!joined ? (
           <div>
             <input

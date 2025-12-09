@@ -1,0 +1,29 @@
+.file-tree-container {
+  flex: 1;
+  overflow-y: hidden;
+  padding-top: 10px;
+}
+
+.file-tree-container:hover {
+  overflow-y: auto;
+}
+
+.file-tree-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.file-tree-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.file-tree-container::-webkit-scrollbar-thumb {
+  background-color: #7a7a7a;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.25s ease;
+}
+
+.file-tree-container::-webkit-scrollbar-thumb:hover {
+  background-color: #b5b5b5;
+}
