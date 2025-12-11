@@ -6,6 +6,7 @@ import { MonacoBinding } from "y-monaco";
 import toast from "react-hot-toast";
 import { AiOutlineFile } from "react-icons/ai";
 import "./App.css";
+import Run from "./components/Run.jsx";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
@@ -13,7 +14,6 @@ import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 
-// 2. Define the MonacoEnvironment global
 self.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === "json") {
@@ -237,7 +237,7 @@ const Editor = ({ roomName }) => {
   };
 
   return (
-    <div style={{ display: "flex", height: "98vh", width: "98vw" }}>
+    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
       <div
         style={{
           width: "250px",
@@ -335,8 +335,10 @@ const Editor = ({ roomName }) => {
           })}
         </div> */}
       </div>
-
-      <div ref={editorRef} style={{ flex: 1, height: "100%" }}></div>
+      <div className="editor-wrapper">
+        <Run />
+        <div ref={editorRef} style={{ flex: 1, height: "100%" }}></div>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Editor from "./Editor";
 import { Toaster } from "react-hot-toast";
+import "./App.css";
 
 const App = () => {
   const [roomName, setRoom] = useState("");
@@ -16,32 +17,30 @@ const App = () => {
 
   return (
     <>
-      <div>
+      <div className="app-wrapper">
         {!joined ? (
-          <div>
-            <input
-              type="text"
-              placeholder="Enter Room ID"
-              value={roomName}
-              onChange={(e) => setRoom(e.target.value)}
-              style={{
-                padding: "8px",
-                fontSize: "16px",
-                width: "200px",
-                marginRight: "10px",
-              }}
-            />
+          <div className="login-container">
+            <div className="login-card">
+              <h2 className="logo-text">Collaborative IDE</h2>
 
-            <button
-              onClick={joinRoom}
-              style={{
-                padding: "8px 14px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-            >
-              Join Room
-            </button>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="input-box"
+                  placeholder="Enter Room ID"
+                  value={roomName}
+                  onChange={(e) => setRoom(e.target.value)}
+                />
+
+                <button onClick={joinRoom} className="btn-join">
+                  Join Room
+                </button>
+              </div>
+
+              <p className="footer-text">
+                Real-time collaboration for developers
+              </p>
+            </div>
           </div>
         ) : (
           <Editor roomName={roomName} />
