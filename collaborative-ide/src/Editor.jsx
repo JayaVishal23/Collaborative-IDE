@@ -336,7 +336,7 @@ const Editor = ({ roomName }) => {
         </div> */}
       </div>
       <div className="editor-wrapper">
-        <Run />
+        <Run editor={editor} />
         <div ref={editorRef} style={{ flex: 1, height: "100%" }}></div>
       </div>
     </div>
