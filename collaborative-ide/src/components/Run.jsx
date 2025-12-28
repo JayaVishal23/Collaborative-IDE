@@ -13,8 +13,13 @@ const Run = ({ editor }) => {
     try {
       const resp = await axios.post(runCodeURL, {
         code: code,
+        language: "python",
       });
-      console.log(resp);
+      if (resp.data.output) {
+        console.log(resp.data.output);
+      } else {
+        console.log(resp.data.error);
+      }
     } catch (err) {
       console.log(err);
     }
