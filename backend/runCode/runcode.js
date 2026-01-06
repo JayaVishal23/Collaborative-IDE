@@ -4,6 +4,7 @@ import { exec } from "child_process";
 import { spawn } from "child_process";
 import { randomUUID } from "crypto";
 
+const TIME_LIMIT_MS = 3000;
 const router = express.Router();
 
 async function writeFileCode(content) {
@@ -19,7 +20,7 @@ async function writeFileCode(content) {
   return executeId;
 }
 
-const runFile = async (fileName, res) => {
+const runFile = async (fileName, input, res) => {
   let output = "";
   let error = "";
 
@@ -30,12 +31,18 @@ const runFile = async (fileName, res) => {
     "0.5",
     "--memory",
     "128m",
+    "-i",
     "-v",
     `${process.cwd()}/runCode/programs:/app`,
     "python-runner",
     "python",
     fileName,
   ]);
+
+  const timer = setTimeout(() => {
+    error = "Time Limit Exceeded";
+    child.kill("SIGKILL");
+  }, TIME_LIMIT_MS);
 
   child.stdout.on("data", (data) => {
     output += data.toString();
@@ -45,6 +52,7 @@ const runFile = async (fileName, res) => {
     error += data.toString();
   });
   child.on("close", async (code) => {
+    clearTimeout(timer);
     try {
       await fs.unlink(`runCode/programs/${fileName}`);
     } catch (err) {
@@ -57,13 +65,18 @@ const runFile = async (fileName, res) => {
       res.json({ output });
     }
   });
+  if (input) {
+    child.stdin.write(input);
+  }
+  child.stdin.end();
 };
 
 router.post("/run", async (req, res) => {
   const code = req.body.code;
   const language = req.body.language;
+  const input = req.body.input;
   let nm = await writeFileCode(code);
-  await runFile(`${nm}.py`, res);
+  await runFile(`${nm}.py`, input, res);
 });
 
 export default router;

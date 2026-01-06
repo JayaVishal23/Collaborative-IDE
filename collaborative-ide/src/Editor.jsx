@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import { AiOutlineFile } from "react-icons/ai";
 import "./App.css";
 import Run from "./components/Run.jsx";
+import Inpt from "./components/Inpt.jsx";
+import Oupt from "./components/Oupt.jsx";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
@@ -52,11 +54,15 @@ const editorStyle = {
 
 const Editor = ({ roomName }) => {
   const editorRef = useRef(null);
+  const modelsRef = useRef({});
 
   const [ydoc, setYdoc] = useState(null);
   const [provider, setProvider] = useState(null);
   const [editor, setEditor] = useState(null);
   const [binding, setBinding] = useState(null);
+  const [lang, setLang] = useState("javascript");
+  const [input, setInput] = useState("");
+  const [out, setOut] = useState("");
 
   const [files, setFiles] = useState({});
   const [activeFile, setActiveFile] = useState(null);
@@ -73,7 +79,7 @@ const Editor = ({ roomName }) => {
     setYdoc(doc);
     setProvider(provider);
 
-    const fileMap = doc.getMap("files");
+    const fileMap = doc.getMap("files"); // This the main dictionary - responsible for if client A writes a word in it, client B sees it instantly.
 
     fileMap.observe(() => {
       setFiles(fileMap.toJSON());
@@ -111,7 +117,7 @@ const Editor = ({ roomName }) => {
     if (!editorRef.current) return;
     const neweditor = monaco.editor.create(editorRef.current, {
       value: "",
-      language: "javascript",
+      language: lang,
       theme: "vs-dark",
       automaticLayout: true,
     });
@@ -119,6 +125,10 @@ const Editor = ({ roomName }) => {
     setEditor(neweditor);
     return () => {
       neweditor.dispose();
+      const models = modelsRef.current;
+      Object.keys(models).forEach((key) => {
+        models[key].dispose();
+      });
     };
   }, [provider]);
 
@@ -126,25 +136,34 @@ const Editor = ({ roomName }) => {
     if (!editor || !ydoc || !provider || !activeFile) return;
     if (binding) binding.destroy();
 
+    let model = modelsRef.current[activeFile];
+    if (!model) {
+      const fileLang = files[activeFile]?.language || "plaintext";
+      model = monaco.editor.createModel("", fileLang);
+      modelsRef.current[activeFile] = model;
+    }
+    editor.setModel(model);
+
     const yText = ydoc.getText(activeFile);
 
     const newbinding = new MonacoBinding(
       yText,
-      editor.getModel(),
+      model,
       new Set([editor]),
       provider.awareness
     );
 
     setBinding(newbinding);
-  }, [activeFile, editor, ydoc, provider]);
+  }, [activeFile, editor, ydoc, provider, files]);
 
   const createNewFile = () => {
     const path = prompt("Enter file path (e.g. src/components/App.js)");
-    const lang = prompt("Enter lanuage");
+    const languag = prompt("Enter lanuage");
+    setLang(languag);
     if (!path || !ydoc) return;
 
     const fileMap = ydoc.getMap("files");
-    fileMap.set(path, { name: path, language: lang });
+    fileMap.set(path, { name: path, language: languag });
     setActiveFile(path);
   };
 
@@ -336,8 +355,12 @@ const Editor = ({ roomName }) => {
         </div> */}
       </div>
       <div className="editor-wrapper">
-        <Run editor={editor} />
-        <div ref={editorRef} style={{ flex: 1, height: "100%" }}></div>
+        <Run editor={editor} input={input} setOutput={setOut} />
+        <div ref={editorRef} className="editor-area"></div>
+        <div className="inp-out">
+          <Inpt value={input} onChange={setInput} />
+          <Oupt out={out} setOutput={setOut} />
+        </div>
       </div>
     </div>
   );
