@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../App.css";
 
-const Inpt = ({ out, setOutput }) => {
+const Oupt = ({ out, setOutput }) => {
   const clrScrn = () => {
     setOutput("");
   };
@@ -15,4 +15,4 @@ const Inpt = ({ out, setOutput }) => {
   );
 };
 
-export default Inpt;
+export default Oupt;
