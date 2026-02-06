@@ -4,6 +4,7 @@ import { WebSocketServer } from "ws";
 import { setupWSConnection } from "y-websocket/bin/utils";
 import runCode from "./runCode/runcode.js";
 import cors from "cors";
+import client from "./db/db.js";
 
 const app = express();
 const port = 1234;
