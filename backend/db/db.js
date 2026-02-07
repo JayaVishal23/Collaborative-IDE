@@ -6,7 +6,6 @@ dotenv.config(); //We use dotenv for env variables
 const { Client } = pkg; //create PostgreSQL client
 
 const client = new Client({
-  // Connect to client
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
